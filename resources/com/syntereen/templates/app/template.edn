@@ -8,6 +8,7 @@
    {"bb.tmpl" "bb.edn"
     "build.tmpl" "build.clj"
     "deps.tmpl"  "deps.edn"}]
+  ["dev" "dev"]
   ["src" "src/{{top/file}}"
    {"main.tmpl" "{{main/file}}.clj"}]
   ["test" "test/{{top/file}}"
