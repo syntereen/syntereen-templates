@@ -1,8 +1,19 @@
 {:paths ["src" "resources"]
- :deps {org.clojure/clojure {:mvn/version "1.12.0-beta1"}}
+ :deps {org.clojure/clojure {:mvn/version "1.12.0-beta1"}
+        ;; logging
+        org.clojure/tools.logging {:mvn/version "1.3.0"}
+        org.apache.logging.log4j/log4j-api {:mvn/version "2.23.1"}
+        org.apache.logging.log4j/log4j-1.2-api {:mvn/version "2.23.1"}
+        org.apache.logging.log4j/log4j-jcl {:mvn/version "2.23.1"}
+        org.apache.logging.log4j/log4j-jul {:mvn/version "2.23.1"}
+        org.apache.logging.log4j/log4j-slf4j-impl {:mvn/version "2.23.1"}}
  :aliases
  {:dev {:extra-paths ["dev"]
-        :jvm-opts ["-Djdk.attach.allowAttachSelf"]}
+        :jvm-opts ["-Djdk.attach.allowAttachSelf"
+                   "-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"]}
+  :run-m {:main-opts ["-m" "{{top/ns}}.{{main/ns}}"]
+          :jvm-opts ["-Dclojure.tools.logging.factory=clojure.tools.logging.impl/log4j2-factory"
+                     "-Dlog4j2.shutdownHookEnabled=false"]}
   :prof
   {:extra-deps {com.clojure-goes-fast/clj-async-profiler {:mvn/version "1.2.2"}}
    :jvm-opts ["-Djdk.attach.allowAttachSelf"
