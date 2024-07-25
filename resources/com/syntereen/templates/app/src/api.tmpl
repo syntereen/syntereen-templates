@@ -1,0 +1,11 @@
+(ns {{top/ns}}.{{main/ns}}.api
+    "The API for {{description}}"
+    (:require [clojure.tools.logging :as log]
+              ;; [clojure.tools.logging.readable :as logr]
+              ))
+
+(defn app
+  "The main function for the app."
+  [args]
+  (log/info "Calling the app")
+  (log/info "Args:" (pr-str args)))

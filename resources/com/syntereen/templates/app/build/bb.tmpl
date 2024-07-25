@@ -13,6 +13,8 @@
   ;; The task below just delegate to build.clj
   test {:doc "Run all tests."
         :task (clojure "-T:build test")}
+  tag {:doc "Tag the current commit with the current version."
+       :task (clojure "-T:build tag")}
   jar {:doc "Create a jar file."
        :depends [clean]
        :task (clojure "-T:build ci")}
