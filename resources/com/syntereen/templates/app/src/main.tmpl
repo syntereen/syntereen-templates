@@ -49,8 +49,6 @@
       (= 0 (count arguments)) {:arguments arguments :options options}
       :else {:exit-message (usage summary)})))
 
-
-
 (defn exit
   "Exit the process.
   With the specified `status` and after logging the `msg`."
