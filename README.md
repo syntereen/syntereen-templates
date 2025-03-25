@@ -10,7 +10,7 @@ As originally generated, it will produce a new library project when run:
 
     $ clojure -Sdeps '{:deps {com.syntereen/templates {:local/root "syntereen-templates"}}}' -Tnew create :template com.syntereen.templates/lib :name myusername/mycoollib
 
-And a neew app project when run:
+And a new app project when run:
 
     $ clojure -Sdeps '{:deps {com.syntereen/templates {:local/root "syntereen-templates"}}}' -Tnew create :template com.syntereen.templates/app :name myusername/mycoolapp
 
