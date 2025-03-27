@@ -1,0 +1,28 @@
+{:tasks
+ {:requires ([babashka.fs :as fs])
+  outdated {:doc "Find out what libs need updating but don't make changes."
+            :task (clojure "-Tantq outdated")}
+  updatelibs {:doc "Update all libs to latest."
+              :task (clojure "-Tantq outdated --update")}
+  lint {:doc "Lint all sources."
+        :task (shell "clj-kondo --lint src:test")}
+  clean {:doc "Removes all unneeded files."
+         :task (do
+                 (run! fs/delete-tree ["target"])
+                 (run! fs/delete (fs/glob "." "**~")))}
+  ;; The task below just delegate to build.clj
+  test {:doc "Run all tests."
+        :task (clojure "-T:build test")}
+  tag {:doc "Tag the current commit with the current version."
+       :task (clojure "-T:build tag")}
+  jar {:doc "Create a jar file."
+       :depends [clean]
+       :task (clojure "-T:build ci")}
+  install {:doc "Install the jar locally."
+           :depends [jar]
+           :task (clojure "-T:build install")}
+  deploy {:doc "Install the jar to Clojars."
+          :depends [jar]
+          :task (clojure "-T:build deploy")}
+  }
+ }

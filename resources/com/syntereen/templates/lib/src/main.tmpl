@@ -1,0 +1,98 @@
+(ns {{top/ns}}.{{main/ns}}
+    "{{description}}"
+    (:require [clojure.tools.logging :as log]
+            ;; [clojure.tools.logging.readable :as logr]
+            [clojure.string :as str]
+            [clojure.tools.cli :refer [parse-opts]]
+            [juxt.clip.core :as clip]
+            [{{top/ns}}.{{main/ns}}.config :as config])
+    (:import (org.apache.logging.log4j LogManager))
+    (:gen-class))
+
+;;; TODO: Should this be an atom instead?
+(def system nil)
+
+(def cli-options
+  [
+   [nil "--dry-run" (str "Run the program but do not make any changes to the output sheet. "
+                         "Default: false (meaning, make the chages) if not specified.")
+    :default false]
+   [nil "--version" "Print the version and exit."]
+   [nil "--help" "Print this help information, and then exit."]
+   ])
+
+(defn usage
+  [options-summary]
+  (let [msg (str/join \newline
+                      ["{{main}}: {{description}}"
+                       ""
+                       "Usage: {{main}} [options]"
+                       ""
+                       "Options:"
+                       options-summary])]
+    msg))
+
+(defn error-msg [errors]
+  (str "The following errors occurred while parsing the command:\n\n"
+       (str/join \newline errors)))
+
+(defn validate-args
+  "Validate command line arguments. Either return a map indicating the program
+  should exit (with a error message, and optional ok status), or a map
+  indicating the arguments and the options provided."
+  [args cli-options]
+  (let [{:keys [options arguments errors summary]} (parse-opts args cli-options)]
+    (cond
+      (:help options) {:exit-message (usage summary) :ok? true}
+      (seq errors) {:exit-message (error-msg errors)}
+      (not (config/options-valid? options)) {:exit-message (config/explain-options options)}
+      (= 0 (count arguments)) {:arguments arguments :options options}
+      :else {:exit-message (usage summary)})))
+
+(defn exit
+  "Exit the process.
+  With the specified `status` and after logging the `msg`."
+  [status msg]
+  (if (zero? status)
+    (log/info msg)
+    (log/error msg))
+  (LogManager/shutdown)
+  (System/exit status))
+
+;;; TODO: Consider using println instead of (or, in addition to) the log for --version and --help.  Needs hammock time!
+;;; TODO: Consider breaking this up into a purely functional part that can be tested (and does not call System/exit),
+;;; and another part that does the System/exit if needed.  Also LogManager/shutdown.
+(defn -main
+  [& args]
+  (try
+    (log/info "")
+    (log/info ">>>>>>>>>>>>>>>>> Starting Log >>>>>>>>>>>>>>>>>")
+    (let [{:keys [options arguments exit-message ok?]} (validate-args args cli-options)]
+      (log/debug "Options:" options)
+      (log/debug "Raw arguments:" args)
+      (log/debug "Arguments:" arguments)
+      (cond exit-message
+            (exit (if ok? 0 1) exit-message)
+            ;;
+            :else
+            (let [system-config (config/system-config :prod options)
+                  _ (log/debug "System config:" system-config)]
+              (.addShutdownHook (Runtime/getRuntime)
+                                (Thread. (fn []
+                                           (when system
+                                             (log/info "Stopping {{main}}."))
+                                           (clip/stop system-config system)
+                                           (log/info ">>>>>>>>>>>>>>>>> Ending Log >>>>>>>>>>>>>>>>>")
+                                           ;; since the log4j2 shutdown hook should be disabled,
+                                           ;; explicity shut down the logger.
+                                           (LogManager/shutdown)
+                                           )))
+              (log/info "Initializing {{main}}.")
+              (cond (not (config/config-valid? system-config)) (exit 1 (config/explain-config system-config))
+                    (:version options) (exit 0 (str "Version: " (config/app-version-string system-config)))
+                    :else
+                    (let [_ (log/info "Starting {{main}}.")
+                          app-system (clip/start system-config)]
+                      (alter-var-root #'system (constantly app-system))
+                      )))))
+    (catch Exception e (log/error e))))

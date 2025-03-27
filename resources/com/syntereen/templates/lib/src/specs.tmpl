@@ -1,0 +1,60 @@
+(ns {{top/ns}}.{{main/ns}}.specs
+  "Specs for {{main}}."
+  (:require [clojure.spec.alpha :as s]
+            [clojure.spec.gen.alpha :as gen]
+            [clojure.string :as str]
+            )
+  )
+
+(s/def ::any any?)
+(s/def ::boolean boolean?)
+(s/def ::string string?)
+
+(s/def ::integer integer?)
+(s/def ::decimal (s/or :double double? :float float? :decimal decimal?))
+(s/def ::nat-int nat-int?)
+
+(s/def ::number number?)
+
+(s/def ::fraction
+  (s/with-gen (s/and #(s/valid? ::decimal %) #(< 0 % 1))
+    #(gen/double* {:Nan? false :min 0.01 :max 0.99}))) ; TODO: only generates doubles currently.
+
+(s/def ::non-blank-string (s/and string? (complement str/blank?)))
+
+;;; options and config
+;;; TODO: maybe move to config.clj?
+
+(s/def ::dry-run (s/nilable ::boolean))
+(s/def ::version-opt ::boolean)
+(s/def ::help-opt ::boolean)
+
+(s/def ::options
+  (s/keys :opt-un [
+                   ::dry-run
+                   ::version
+                   ::help
+                   ]
+          ))
+
+(s/def ::version-string ::non-blank-string)
+
+(s/def ::name ::non-blank-string)
+
+(s/def ::app-config (s/keys :req-un [
+                                     ::name
+                                     ::dry-run
+                                     ::version-string
+                                     ]))
+
+(s/def ::app (s/keys :req-un [::start]))
+
+(s/def ::components (s/keys :req-un [
+                                     ::app
+                                     ]))
+
+(s/def ::config
+  (s/keys :req-un [
+                   ::app-config
+                   ::components
+                   ]))

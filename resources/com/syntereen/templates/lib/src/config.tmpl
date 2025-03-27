@@ -1,0 +1,55 @@
+(ns {{top/ns}}.{{main/ns}}.config
+  "Define the system config based on the profile."
+  (:require [clojure.java.io :as io]
+            [clojure.spec.alpha :as s]
+            [aero.core :as aero]
+            [{{top/ns}}.{{main/ns}}.specs :as specs]
+            )
+  )
+
+(def system-config-file-name "{{top/file}}/{{main/file}}/config.edn")
+
+(defmethod aero/reader 'cli
+  [opts _tag value]
+  (get-in (get opts :cli) value))
+
+(defn system-config
+  "Return a system configuration, given a `profile` and the run-time `options` map."
+  [profile options]
+  (let [config-file (or (:config-file options) system-config-file-name)]
+    (aero/read-config (io/resource config-file)
+                      (assoc {:profile profile} :cli options))))
+
+(defn options-valid?
+  "Returns `true` if the `options` are syntactically valid.
+  `false` otherwise."
+  [options]
+  (s/valid? ::specs/options options))
+
+(defn config-valid?
+  "Returns `true` if the `config` is syntactically valid.
+  `false` otherwise."
+  [config]
+  (s/valid? ::specs/config config))
+
+(defn explain-options
+  "Returns the spec error for `options`, as a string."
+  [options]
+  (with-out-str (s/explain ::specs/options options)))
+
+(defn explain-config
+  "Returns the spec error for `config`, as a string."
+  [config]
+  (with-out-str (s/explain ::specs/config config)))
+
+;;; config accessor functions
+
+(defn app-version-string
+  "The version string of this app."
+  [config]
+  (get-in config [:app-config :version-string]))
+
+(defn app-name
+  "The name of this app."
+  [config]
+  (get-in config [:app-config :name]))
