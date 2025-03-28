@@ -15,8 +15,8 @@
         :task (clojure "-T:build test")}
   tag {:doc "Tag the current commit with the current version."
        :task (clojure "-T:build tag")}
-  uberjar {:doc "Create a jar file."
-           :depends [clean]
-           :task (clojure "-T:build ci")}
+  ci {:doc "Create an uberjar file."
+      :depends [clean]
+      :task (clojure "-T:build ci")}
   }
  }
