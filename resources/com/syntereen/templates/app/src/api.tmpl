@@ -6,6 +6,9 @@
 
 (defn app
   "The main function for the app."
-  [args]
+  [{:keys [dry-run app-arguments] :as args}]
   (log/info "Calling the app")
-  (log/info "Args:" (pr-str args)))
+  (log/info "Args:" (pr-str args))
+  (log/debug "dry-run:" dry-run)
+  ;; Add your code here
+  )

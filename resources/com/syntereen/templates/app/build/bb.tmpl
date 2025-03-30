@@ -10,7 +10,12 @@
          :task (do
                  (run! fs/delete-tree ["target"])
                  (run! fs/delete (fs/glob "." "**~")))}
-  ;; The task below just delegate to build.clj
+  init {:doc "Initialize this dir with git."
+        :task (do
+                (shell "git init .")
+                (shell "git add .")
+                (shell "git commit -m \"Just after deps-new\""))}
+  ;; The tasks below just delegate to build.clj
   test {:doc "Run all tests."
         :task (clojure "-T:build test")}
   tag {:doc "Tag the current commit with the current version."

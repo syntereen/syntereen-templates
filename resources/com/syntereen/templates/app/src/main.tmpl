@@ -26,7 +26,8 @@
   (let [msg (str/join \newline
                       ["{{main}}: {{description}}"
                        ""
-                       "Usage: {{main}} [options]"
+                       ;; Change any arguments, also in specs.clj
+                       "Usage: {{main}} [options] [arguments]"
                        ""
                        "Options:"
                        options-summary])]
@@ -46,8 +47,8 @@
       (:help options) {:exit-message (usage summary) :ok? true}
       (seq errors) {:exit-message (error-msg errors)}
       (not (config/options-valid? options)) {:exit-message (config/explain-options options)}
-      (= 0 (count arguments)) {:arguments arguments :options options}
-      :else {:exit-message (usage summary)})))
+      (not (config/arguments-valid? arguments)) {:exit-message (config/explain-arguments arguments)}
+      :else {:arguments arguments :options options :ok? true})))
 
 (defn exit
   "Exit the process.
@@ -60,22 +61,22 @@
   (System/exit status))
 
 ;;; TODO: Consider using println instead of (or, in addition to) the log for --version and --help.  Needs hammock time!
-;;; TODO: Consider breaking this up into a purely functional part that can be tested (and does not call System/exit),
-;;; and another part that does the System/exit if needed.  Also LogManager/shutdown.
+;;; TODO: Consider breaking this up into a purely functional part that can be tested and used via a REPL
+;;; (since it does not call System/exit), and another part that does the System/exit if needed.  Also LogManager/shutdown.
 (defn -main
   [& args]
   (try
     (log/info "")
     (log/info ">>>>>>>>>>>>>>>>> Starting Log >>>>>>>>>>>>>>>>>")
     (let [{:keys [options arguments exit-message ok?]} (validate-args args cli-options)]
-      (log/debug "Options:" options)
       (log/debug "Raw arguments:" args)
+      (log/debug "Options:" options)
       (log/debug "Arguments:" arguments)
       (cond exit-message
             (exit (if ok? 0 1) exit-message)
             ;;
             :else
-            (let [system-config (config/system-config :prod options)
+            (let [system-config (config/system-config :prod options arguments)
                   _ (log/debug "System config:" system-config)]
               (.addShutdownHook (Runtime/getRuntime)
                                 (Thread. (fn []

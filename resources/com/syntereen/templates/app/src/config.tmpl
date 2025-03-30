@@ -14,11 +14,16 @@
   (get-in (get opts :cli) value))
 
 (defn system-config
-  "Return a system configuration, given a `profile` and the run-time `options` map."
-  [profile options]
+  "Return a system configuration, given a `profile`
+  and the run-time `options` and `arguments`.
+  If `:config-file` is one of the options, its value
+  is used for the config file path name, otherwise use
+  the default config file path."
+  [profile options arguments]
   (let [config-file (or (:config-file options) system-config-file-name)]
-    (aero/read-config (io/resource config-file)
-                      (assoc {:profile profile} :cli options))))
+    (assoc (aero/read-config (io/resource config-file)
+                             (assoc {:profile profile} :cli options))
+           :app-arguments arguments)))
 
 (defn options-valid?
   "Returns `true` if the `options` are syntactically valid.
@@ -26,16 +31,27 @@
   [options]
   (s/valid? ::specs/options options))
 
+(defn explain-options
+  "Returns the spec error for `options`, as a string."
+  [options]
+  (with-out-str (s/explain ::specs/options options)))
+
+(defn arguments-valid?
+  "Returns `true` if the `arguments` are syntactically valid.
+  `false` otherwise."
+  [arguments]
+  (s/valid? ::specs/arguments arguments))
+
+(defn explain-arguments
+  "Returns the spec error for `arguments`, as a string."
+  [arguments]
+  (with-out-str (s/explain ::specs/arguments arguments)))
+
 (defn config-valid?
   "Returns `true` if the `config` is syntactically valid.
   `false` otherwise."
   [config]
   (s/valid? ::specs/config config))
-
-(defn explain-options
-  "Returns the spec error for `options`, as a string."
-  [options]
-  (with-out-str (s/explain ::specs/options options)))
 
 (defn explain-config
   "Returns the spec error for `config`, as a string."
@@ -53,3 +69,11 @@
   "The name of this app."
   [config]
   (get-in config [:app-config :name]))
+
+;;; arguments accessor fucntion
+
+(defn app-arguments
+  "The arguments (non-option parameters, typically filenames)
+  given to the app on the command line."
+  [config]
+  (get config :app-arguments))

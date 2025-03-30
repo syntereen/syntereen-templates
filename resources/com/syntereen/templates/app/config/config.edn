@@ -1,10 +1,12 @@
 {:app-config #merge [{:name "{{main}}"
-                      :dry-run #or [#cli [:dry-run] false]
+                      :dry-run #or [#cli [:opts :dry-run] false]
                       }
                      #include "version.edn"]
+ :app-arguments #cli [:args]
  :components {:app
               {:start ({{top/ns}}.{{main/ns}}.api/app
                        {:dry-run #ref [:app-config :dry-run]
+                        :app-arguments #ref [:app-arguments]
                         }
                        )
                }

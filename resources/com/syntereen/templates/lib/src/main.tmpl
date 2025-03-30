@@ -68,8 +68,8 @@
     (log/info "")
     (log/info ">>>>>>>>>>>>>>>>> Starting Log >>>>>>>>>>>>>>>>>")
     (let [{:keys [options arguments exit-message ok?]} (validate-args args cli-options)]
-      (log/debug "Options:" options)
       (log/debug "Raw arguments:" args)
+      (log/debug "Options:" options)
       (log/debug "Arguments:" arguments)
       (cond exit-message
             (exit (if ok? 0 1) exit-message)

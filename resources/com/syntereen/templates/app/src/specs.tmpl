@@ -37,6 +37,11 @@
                    ]
           ))
 
+(s/def ::arguments
+  (s/coll-of string?
+             :kind vector?
+             #_#_:count 1))
+
 (s/def ::version-string ::non-blank-string)
 
 (s/def ::name ::non-blank-string)
@@ -53,8 +58,11 @@
                                      ::app
                                      ]))
 
+(s/def ::app-arguments ::arguments)
+
 (s/def ::config
   (s/keys :req-un [
                    ::app-config
+                   ::app-arguments
                    ::components
                    ]))
