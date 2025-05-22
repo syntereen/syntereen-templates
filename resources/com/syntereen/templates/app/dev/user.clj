@@ -1,5 +1,7 @@
 (ns user
   "The user namespace for development."
+  (:require [clojure.pprint :as pp]
+            [clojure.reflect :as cr])
   ;; Ideally, require nothing here (see jit macro)
   )
 
@@ -24,4 +26,9 @@
   `(requiring-resolve '~sym))
 
 (comment
+  (set! *warn-on-reflection* true)
+
+  ;; do not put logging in the :require since it interacts badly with cider/nrepl
+  (require '[clojure.tools.logging :as log])
+  (require '[{{top/ns}}.{{main/ns}} :as {{main/ns}}] :reload)
   )
