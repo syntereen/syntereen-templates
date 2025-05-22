@@ -18,12 +18,16 @@
   and the run-time `options` and `arguments`.
   If `:config-file` is one of the options, its value
   is used for the config file path name, otherwise use
-  the default config file path."
+  the default config file path.
+  NOTE: In the config edn file,
+  the `options` are available user the key `:opts` and
+  the `arguments` are available under the key `:args`
+  with the `#cli` reader macro."
   [profile options arguments]
   (let [config-file (or (:config-file options) system-config-file-name)]
-    (assoc (aero/read-config (io/resource config-file)
-                             (assoc {:profile profile} :cli options))
-           :app-arguments arguments)))
+    (aero/read-config (io/resource config-file)
+                      (assoc {:profile profile} :cli {:opts options
+                                                      :args arguments}))))
 
 (defn options-valid?
   "Returns `true` if the `options` are syntactically valid.
