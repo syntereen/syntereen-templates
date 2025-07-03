@@ -30,5 +30,5 @@
 
   ;; do not put logging in the :require since it interacts badly with cider/nrepl
   (require '[clojure.tools.logging :as log])
-  (require '[{{top/ns}}.{{main/ns}} :as {{main.ns}}] :reload)
+  (require '[{{top/ns}}.{{main/ns}} :as {{main/ns}}] :reload)
   )
