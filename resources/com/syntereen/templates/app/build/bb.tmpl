@@ -2,9 +2,9 @@
 {:tasks
  {:requires ([babashka.fs :as fs])
   outdated {:doc "Find out what libs need updating but don't make changes."
-            :task (clojure "-Tantq outdated")}
+            :task (clojure "-M:outdated outdated")}
   updatelibs {:doc "Update all libs to latest."
-              :task (clojure "-Tantq outdated --update")}
+              :task (clojure "-M:outdated outdated --upgrade")}
   lint {:doc "Lint all sources."
         :task (shell "clj-kondo --lint src:test")}
   clean {:doc "Removes all unneeded files."
