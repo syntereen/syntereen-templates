@@ -1,12 +1,3 @@
-{:app-config #merge [{:name "{{main}}"
-                      :dry-run #or [#cli [:dry-run] false]
-                      }
-                     #include "version.edn"]
- :components {:app
-              {:start ({{top/ns}}.{{main/ns}}.api/app
-                       {:dry-run #ref [:app-config :dry-run]
-                        }
-                       )
-               }
-              }
+{
+ :fixme "FIXME: A value of a config item"
  }
