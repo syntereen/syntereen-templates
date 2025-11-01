@@ -11,6 +11,6 @@
             (it "should throw"
                 (expect (throws? ArithmeticException (/ 1 0))))
             (it "should also throw"
-                (expect (throws-with-msg? Exception #"foo" (throw Exception "foo bar"))))
+                (expect (throws-with-msg? Exception #"foo" (throw (Exception. "foo bar")))))
             (it "should fail. FIXME."
                 (expect (= 0 1)))))
