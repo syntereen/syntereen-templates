@@ -1,10 +1,16 @@
 ;;; -*- clojure -*-
 (ns {{top/ns}}.{{main/ns}}-test
-  (:require [clojure.test :refer [deftest is testing]]
-            [{{top/ns}}.{{main/ns}} :as sut]))
+    (:require [lazytest.core :refer [defdescribe describe it expect assert throws? throws-with-msg?]]
+              ;[com.gfredericks.test.chuck :as chuck]
+              [{{top/ns}}.{{main/ns}} :as sut]))
 
 (defn delete-me [] (sut/-main))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))
+(defdescribe a-test "Testing a"
+  (describe "failing tests"
+            (it "should throw"
+                (assert (throws? ArithmeticException (/ 1 0))))
+            (it "should also throw"
+                (assert (throws-with-msg ? Exception #"foo" (throw Exception "foo bar"))))
+            (it "should fail. FIXME."
+                (expect (= 0 1)))))
