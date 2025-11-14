@@ -1,5 +1,5 @@
 {:app-config #merge [{:name "{{main}}"
-                      :dry-run #or [#cli [:opts :dry-run] false]
+                      :dry-run #boolean #or [#cli [:opts :dry-run] false]
                       }
                      #include "version.edn"]
  :app-arguments #cli [:args]
