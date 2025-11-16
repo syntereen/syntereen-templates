@@ -70,15 +70,15 @@
     (log/info "")
     (log/info ">>>>>>>>>>>>>>>>> Starting Log >>>>>>>>>>>>>>>>>")
     (let [{:keys [options arguments exit-message ok?]} (validate-args args cli-options)]
-      (log/debug "Raw arguments:" args)
-      (log/debug "Options:" options)
-      (log/debug "Arguments:" arguments)
+      (log/debug "Raw arguments:" (pr-str args))
+      (log/debug "Options:" (pr-str options))
+      (log/debug "Arguments:" (pr-str arguments))
       (cond exit-message
             (exit (if ok? 0 1) exit-message)
             ;;
             :else
             (let [system-config (config/system-config :prod options arguments)
-                  _ (log/debug "System config:" system-config)]
+                  _ (log/debug "System config:" (pr-str system-config))]
               (.addShutdownHook (Runtime/getRuntime)
                                 (Thread. (fn []
                                            (when system
