@@ -29,6 +29,5 @@ file -- that it is valid EDN and it satisfies the `deps-new` Spec for template f
 
 ## License
 
-Copyright © 2024-2025 Dorab Patel
-
 MIT License.
+See the LICENSE file for details.
